@@ -1,0 +1,19 @@
+body {
+    padding: 10px;
+}
+
+
+p, .containers {
+    margin-left: 10px;
+    max-width: 55px;
+    height: 50px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+
+.desc {
+    margin-left: 5%;
+}
+

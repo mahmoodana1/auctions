@@ -1,0 +1,94 @@
+{% extends "auctions/layout.html" %}
+
+
+{% block ex %}
+
+{% if not user.id == auther_id %}
+
+    {% if user.id in users_ids_linked_to_this_listing %}
+
+        <li class="nav-item">
+            <form action="{% url 'remove_from_wishlist' user.id listing_id  %}" method="POST">
+                {% csrf_token %}
+                <input type="Submit" class="btn btn-danger" value="Remove From WatchList">
+                <input type="hidden" name= "listing_id's" value="{{ listing_id }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+            </form>
+        </li>
+    {% else %}
+        <li class="nav-item">
+            <form action="{% url 'listing' listing_id  %}" method="POST">
+                {% csrf_token %}
+                <input type="Submit" class="btn btn-primary" value="Watch List+">
+                <input type="hidden" name= "listing_id's" value="{{ listing_id }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+            </form>
+        </li>
+
+    {% endif %}
+{% else %}
+
+    <li class="nav-item">
+        <a class="nav-link btn-danger" href="{% url 'close_bid' listing_id %}" style="border-radius: 5px;">Close Bid</a>
+    </li>
+{% endif %}
+
+{%endblock %}
+
+{% block body %}
+    {% for x in listing %}
+        <div class="container text-center">
+            <h1>{{ x.title }}</h1><br>
+            <div class="text-success">
+                <hr class="border border-primary border-3 opacity-75">
+            </div>
+            <div class="row">
+                <img src="{{ x.image }}" class="container text-center col" alt="-" style="width:20%; height:25rem;display:block;">
+                <div class="col">
+                    <h2>Description</h2>
+                    {{ x.description }}
+                </div>
+            </div>
+            <br><br>
+            <h6>Current Bid is {{ x.bid }}</h6>
+            {{ messege }}
+            {% if user.is_authenticated and user.id != auther_id%}
+                {% if x.is_closed == False %}
+                    <form action="{% url 'bid_on_listing' listing_id user.id %}" method="POST">
+                        {% csrf_token %}
+                        <label for="bid">Type your Bid: </label>
+                        <input type="text" name="bid" id="bid">
+                        <input type="Submit" value="Submit">
+                    </form>
+                {% elif x.is_closed == True and user.id == x.highest_bidder%}
+                    <h1 style="background-color: forestgreen; border-radius:5px;">You Won!</h1>
+                {% elif x.is_closed == True and user.id != x.highest_bidder%}
+                <h1 style="background-color: #dc3545; border-radius:5px;">Closed!</h1>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+    <div class="text-success">
+        <hr class="border border-primary border-3 opacity-75">
+    </div>
+    {% if user.is_authenticated %}
+        <form action="{% url 'comment_action' %}" class="contaoner text-center" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="user_name" value="{{ user.username }}">
+            <input type="hidden" name="listing_id" value="{{ listing_id }}">
+            <input type="text" name="comment_content" placeholder="Comment..." class="form-control" style="height:50%">
+        </form>
+    {% endif %}
+    {% for comment in comments%}
+        <div class="container text-center">
+            <div class="row">
+                <div class="card col" style="width: 28rem;">
+                    <div class="card-body">
+                    <h5 class="card-title">{{ comment.auther_name }}</h5>
+                    <p class="card-text">{{ comment.content }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {%endfor%}
+{% endblock %}

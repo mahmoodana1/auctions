@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+<table class="table table-bordered table-striped">
+    <thead>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Current Bid</th>
+        <th>Image</th>
+        <th><!--view --></th>
+    </thead>
+    <tbody>
+        {% for listing in listings %}
+            {% if listing.id in elements %}
+                <tr>
+                    <td>{{ listing.title }}</td>
+                    <td>{{ listing.description }}</td>
+                    <td><strong><div style="margin-left: 40%; margin-top:30%;">{{ listing.bid }}</div></strong></td>
+                    <td><img src="{{ listing.image }}" class="card-img-top" alt="-" width="50px" height="150px"></td>
+                    <td> <a class="btn btn-primary" href="{% url 'listing' listing.id %}" style="margin-left: 40%; margin-top:30%;"><strong>View</strong></a></td>
+                </tr>
+            {% endif %}
+        {%endfor%}
+    </tbody>
+
+</table>
+
+{% endblock %}
